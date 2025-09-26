@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify Music Player Hub</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a1c4fd, #c2e9fb);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .navbar {
+      background: #212529;
+    }
+
+    .artist-card, .song-card {
+      border-radius: 15px;
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .artist-card:hover, .song-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    .spotify-embed {
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#">🎵 Spotify Music Hub</a>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <!-- Artists Section -->
+    <h2 class="text-center mb-4 text-dark">Select an Artist</h2>
+    <div class="row" id="artistsList">
+      <!-- Artist cards will be inserted here by JS -->
+    </div>
+
+    <!-- Songs Section -->
+    <h2 class="text-center mt-5 text-dark">Select a Song</h2>
+    <div class="row" id="songsList">
+      <!-- Song cards will appear here after selecting an artist -->
+    </div>
+
+    <!-- Spotify Embed -->
+    <div class="spotify-embed" id="spotifyPlayer"></div>
+  </div>
+
+  <script>
+    // Sample data of 7 artists and their Spotify tracks
+    const artists = [
+      { name: "The Weeknd", songs: [{title: "Blinding Lights", trackId: "07WEDHF2YwVgYuBugi2ECO"}, {title: "Save Your Tears", trackId: "5QO79kh1waicV47BqGRL3g"}] },
+      { name: "Dua Lipa", songs: [{title: "Levitating", trackId: "463CkQjx2Zk1yXoBuierM9"}, {title: "Don't Start Now", trackId: "6WrI0LAC5M1Rw2MnX2ZvEg"}] },
+      { name: "Adele", songs: [{title: "Hello", trackId: "4kflIGfjdZJW4ot2ioixTB"}, {title: "Easy On Me", trackId: "2G7lNY8VfCwzFdyHPpWvC3"}] },
+      { name: "Ed Sheeran", songs: [{title: "Shape of You", trackId: "7qiZfU4dY1lWllzX7mPBI3"}, {title: "Perfect", trackId: "0tgVpDi06FyKpA1z0VMD4v"}] },
+      { name: "Taylor Swift", songs: [{title: "Love Story", trackId: "3S8uQw8RY7b4sK4P7e2g3H"}, {title: "Shake It Off", trackId: "2q0x2h73uGk0V8m25b9pTp"}] },
+      { name: "Bruno Mars", songs: [{title: "Uptown Funk", trackId: "32OlwWuMpZ6b0aN2RZOeMS"}, {title: "24K Magic", trackId: "6kYwZtNY7kVf3Ah1zi8Fgu"}] },
+      { name: "Billie Eilish", songs: [{title: "Bad Guy", trackId: "2Fxmhks0bxGSBdJ92vM42m"}, {title: "Ocean Eyes", trackId: "1uNFoZAHBGtllmzznpCI3s"}] }
+    ];
+
+    // Render artist cards
+    artists.forEach(artist => {
+      $('#artistsList').append(`
+        <div class="col-md-4">
+          <div class="card artist-card text-center p-3" data-artist='${artist.name}'>
+            <h5>${artist.name}</h5>
+          </div>
+        </div>
+      `);
+    });
+
+    // When artist is clicked, show their songs
+    $('.artist-card').click(function() {
+      const artistName = $(this).data('artist');
+      const artist = artists.find(a => a.name === artistName);
+      $('#songsList').empty();
+      artist.songs.forEach(song => {
+        $('#songsList').append(`
+          <div class="col-md-4">
+            <div class="card song-card text-center p-3" data-track="${song.trackId}">
+              <h6>${song.title}</h6>
+            </div>
+          </div>
+        `);
+      });
+      $('html, body').animate({ scrollTop: $("#songsList").offset().top - 100 }, 600);
+    });
+
+    // When song is clicked, play on Spotify
+    $(document).on('click', '.song-card', function() {
+      const trackId = $(this).data('track');
+      const embed = `<iframe src="https://open.spotify.com/embed/track/${trackId}" width="300" height="80" frameborder="0" allow="encrypted-media" allowtransparency="true"></iframe>`;
+      $('#spotifyPlayer').html(embed);
+      $('html, body').animate({ scrollTop: $("#spotifyPlayer").offset().top - 100 }, 600);
+    });
+  </script>
+</body>
+</html>
